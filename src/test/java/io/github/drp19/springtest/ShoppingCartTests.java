@@ -2,36 +2,52 @@ package io.github.drp19.springtest;
 
 import io.github.drp19.springtest.model.ShoppingCart;
 import io.github.drp19.springtest.model.ShoppingItem;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 
 public class ShoppingCartTests {
 
 	@Test
-	public void addDuplicateItems_bothAdded() {
+	public void addDuplicateItems_updateQuantity() {
 		ShoppingCart testCart = new ShoppingCart();
 		ShoppingItem itemA = new ShoppingItem("eggs"), itemB = new ShoppingItem("eggs");
-		Collection<ShoppingItem> expected = new HashSet<>();
-		expected.add(itemA);
-		expected.add(itemB);
+		ShoppingItem expectedItem = new ShoppingItem("eggs");
+		expectedItem.setQuantity(2);
+
+		Collection<ShoppingItem> expected = new ArrayList<>();
+		expected.add(expectedItem);
 
 		testCart.addItem(itemA);
 		testCart.addItem(itemB);
-		Assert.assertEquals(expected,testCart.listItems());
+		Collection<ShoppingItem> found = testCart.listItems();
+		Assert.assertTrue(found.size() == expected.size() && found.containsAll(expected) && expected.containsAll(found));
 	}
 
 	@Test
-	public void addIdenticalItems() {
+	public void addIdenticalItems_noChange() {
+		ShoppingCart testCart = new ShoppingCart();
+		ShoppingItem dupItem = new ShoppingItem("bread");
+		dupItem.setQuantity(2);
+		Collection<ShoppingItem> expected = new ArrayList<>();
+		expected.add(dupItem);
 
+		testCart.addItem(dupItem);
+		testCart.addItem(dupItem);
 	}
 
 
-	@Test
-	public void addVarious() {
-
+	@Test(expectedExceptions = ArithmeticException.class)
+	public void addTooMany_throwArithmetic() {
+		ShoppingCart testCart = new ShoppingCart();
+		ShoppingItem bigItem = new ShoppingItem("car"), smallItem = new ShoppingItem("car");
+		bigItem.setQuantity(Integer.MAX_VALUE);
+		testCart.addItem(bigItem);
+		testCart.addItem(smallItem);
 	}
 }

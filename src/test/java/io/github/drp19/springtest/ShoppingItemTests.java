@@ -17,4 +17,11 @@ public class ShoppingItemTests {
 		ShoppingItem item = new ShoppingItem(null);
 	}
 
+	@Test(expectedExceptions = ArithmeticException.class)
+	void testQuantityOverflow_throwArithmetic() {
+		ShoppingItem item = new ShoppingItem("butter");
+		item.setQuantity(Integer.MAX_VALUE);
+		item.incrementQuantity();
+	}
+
 }
